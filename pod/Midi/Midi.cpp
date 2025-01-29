@@ -6,6 +6,9 @@
 using namespace daisy;
 using namespace daisysp;
 
+char        buff[512];
+
+
 DaisyPod   hw;
 Oscillator osc;
 Svf        filt;
@@ -23,15 +26,18 @@ void AudioCallback(AudioHandle::InterleavingInputBuffer  in,
     }
 }
 
+
+
 // Typical Switch case for Message Type.
 void HandleMidiMessage(MidiEvent m)
 {
+    sprintf(buff, "HandleMidiMessage(%d,%d,%d,%d):\r\n",m.type,m.channel,m.data[0],m.data[1]);            hw.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
     switch(m.type)
     {
         case NoteOn:
         {
+            /*lol*/ sprintf(buff, "MIDI NoteOnEvent:\r\n");            hw.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
             NoteOnEvent p = m.AsNoteOn();
-            char        buff[512];
             sprintf(buff,
                     "Note Received:\t%d\t%d\t%d\r\n",
                     m.channel,
@@ -49,6 +55,7 @@ void HandleMidiMessage(MidiEvent m)
         break;
         case ControlChange:
         {
+            /*lol*/ sprintf(buff, "MIDI ControlChangeEvent:\r\n");            hw.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
             ControlChangeEvent p = m.AsControlChange();
             switch(p.control_number)
             {
@@ -64,7 +71,10 @@ void HandleMidiMessage(MidiEvent m)
             }
             break;
         }
-        default: break;
+        break;
+        default:
+        /*lol*/ sprintf(buff, "MIDI other event:\r\n");            hw.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
+        break;
     }
 }
 
@@ -72,8 +82,13 @@ void HandleMidiMessage(MidiEvent m)
 // Main -- Init, and Midi Handling
 int main(void)
 {
+//    bool led_state;
+//    led_state = true;
+
+
     // Init
     float samplerate;
+    
     hw.Init();
     hw.SetAudioBlockSize(4);
     hw.seed.usb_handle.Init(UsbHandle::FS_INTERNAL);
@@ -89,13 +104,36 @@ int main(void)
     hw.StartAdc();
     hw.StartAudio(AudioCallback);
     hw.midi.StartReceive();
+
+/*lol*/ sprintf(buff, "hw.midi.StartReceive():\r\n");    hw.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
+
+
+
+
     for(;;)
     {
         hw.midi.Listen();
         // Handle MIDI Events
         while(hw.midi.HasEvents())
         {
+            hw.led1.SetRed(1);  hw.UpdateLeds();
+///*lol*/ sprintf(buff, "MIDI event:\r\n");            hw.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
             HandleMidiMessage(hw.midi.PopEvent());
+            hw.led1.SetRed(0);  hw.UpdateLeds();
         }
+
+//        hw.seed.SetLed(led_state);
+//        led_state = !led_state;
+
+//        hw.led1.Set(r, g, b); hw.UpdateLeds();
+
+        hw.seed.SetLed(1);
+//        hw.led1.Set(0.1, 0, 0); 
+//        hw.led2.Set(0, 0.5, 0); 
+        hw.UpdateLeds();
+        System::Delay(100);
+        hw.seed.SetLed(0); hw.led1.Set(0, 0, 0); hw.led2.Set(0, 0, 0); hw.UpdateLeds();
+        System::Delay(100);
+        sprintf(buff, ".");            hw.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
     }
 }

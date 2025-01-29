@@ -1,0 +1,154 @@
+void func(MakeThisLookLikeCForIntellisense){}; //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+            osc[i].SetAmp(0);
+
+
+
+            osc[i].SetFreq(mtof(keysDown[i].note));
+            osc[i].SetAmp(0.5f);                 //TODO Use aftertouch value
+
+
+
+
+ 
+ 
+ 
+
+	for (uint8_t i = 0; i < MAX_VOICES; i++)
+	{
+		osc_next_ = (osc_next_ + 1) % MAX_VOICES;
+
+		if(note_midi_[osc_next_] == 0)
+		{
+			note_midi_[osc_next_] = midi_note;
+			note_freq_[osc_next_] = mtof(note_midi_[osc_next_]);
+			bender_offset[osc_next_] = ((note_freq_[osc_next_]) - (mtof(note_midi_[osc_next_] + 1)));
+			velocity[osc_next_] = ((float)midi_velocity / MIDI_VELOCITY_MAX);
+			break;
+		}
+	}
+
+
+
+	for (uint8_t i = 0; i < MAX_VOICES; i++)
+	{
+		if (note_midi_[i] == midi_note)
+		{
+			note_midi_[i] = 0;
+		}
+	}
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+
+    hw.seed.StartLog(true);              // Start the log, and wait for connection
+    hw.seed.PrintLine("Hello World!");   // Print "Hello World" to the Serial Monitor
+    bool led_state = true;
+    while(1)
+    {
+        hw.seed.Print(".");
+        hw.SetLed(led_state);
+        led_state = !led_state;
+        System::Delay(100);
+    }
+
+
+void ProcessNoteOn(NoteOnEvent noteToAdd)
+{
+    //TODO  Could this be more elegant? with for( uint8_t i=0; i<=numKeysDown; i++)
+    //TODO  Could this be more elegant? by avoiding if( keysDown[i] == 0 ) as special case
+
+    uint8_t i=0;
+    while( i < MAX_KEYS_DOWN ) {
+        if( noteToAdd > keysDown[i].note ) {
+
+        }
+        i++;
+    }
+
+
+    for( uint8_t i=0; i<MAX_KEYS_DOWN; i++) {       // Incrementing index for examining entries
+
+        if( keysDown[i].note == 0 ) {   //  Empty slot at end of list
+            if( numKeysDown == MAX_KEYS_DOWN ) {
+                NoteOffEvent noteToRemove;
+                noteToRemove.note = keysDown[MAX_KEYS_DOWN-1].note;
+                ProcessNoteOff(noteToRemove);
+            }
+            keysDown[i] = noteToAdd;
+            numKeysDown++;
+            osc[i].SetFreq(mtof(keysDown[i].note));
+            osc[i].SetAmp(0.5f);                 //TODO Use aftertouch value
+            return;
+        }
+
+        if( noteToAdd.note < keysDown[i].note ) {   //  New note is lower than indexed note
+            continue;                       //  Move on to next index
+        }
+        else {                              //  New note is higher than indexed note
+            if( numKeysDown == MAX_KEYS_DOWN ) {
+                NoteOffEvent noteToRemove;
+                noteToRemove.note = keysDown[MAX_KEYS_DOWN-1].note;
+                ProcessNoteOff(noteToRemove);
+            }
+            uint8_t d = numKeysDown;    // Decrementing counter for shifting entries
+            while ( d > i )
+            {
+                keysDown[d] = keysDown[d-1];
+                d--;
+            }
+            keysDown[i] = noteToAdd;
+            numKeysDown++;  
+            osc[i].SetFreq(mtof(keysDown[i].note));
+            osc[i].SetAmp(0.5f);                 //TODO Use aftertouch value
+            return;
+        }
+        //TODO  Could get to here if list is full of notes higher than new note 
+        //TODO  Could get to here if new note is same as one already playing
+    }
+}
+
+
+
+
+    

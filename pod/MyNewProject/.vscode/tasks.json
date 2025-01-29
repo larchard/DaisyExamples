@@ -1,11 +1,6 @@
 {
   "tasks": [
     {
-      "label": "echo",
-      "type": "shell",
-      "command": "\n\recho workspaceFolder=${workspaceFolder}  \n\recho workspaceFolder=${workspaceFolder}  \n\recho workspaceFolder=${workspaceFolder}"
-    },
-    {
       "command": "make clean; make",
       "group": "build",
       "label": "build",
@@ -17,18 +12,20 @@
     },
     {
       "command": "make clean; make; make program",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "label": "build_and_program",
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "type": "shell",
-      "group": "build"
+      "problemMatcher": [],
+      "type": "shell"
     },
     {
       "command": "make clean; make; make program-dfu",
+      "group": "build",
       "label": "build_and_program_dfu",
       "options": {
         "cwd": "${workspaceFolder}"
@@ -40,6 +37,10 @@
     },
     {
       "command": "make clean;make",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "dependsOn": [
         "build_libdaisy",
         "build_daisysp"
@@ -49,11 +50,11 @@
         "cwd": "${workspaceFolder}"
       },
       "problemMatcher": [],
-      "type": "shell",
-      "group": "build"
+      "type": "shell"
     },
     {
       "command": "make clean;DEBUG=1 make",
+      "group": "build",
       "dependsOn": [
         "build_libdaisy",
         "build_daisysp"
@@ -69,21 +70,24 @@
     },
     {
       "command": "make program-dfu",
+      "group": "build",
       "label": "program-dfu",
       "problemMatcher": [],
       "type": "shell"
     },
     {
       "command": "make program",
+      "group": "build",
       "label": "program",
       "problemMatcher": [],
       "type": "shell"
     },
     {
       "command": "make",
+      "group": "build",
       "label": "build_libdaisy",
       "options": {
-        "cwd": "${workspaceFolder}/../../libDaisy"
+        "cwd": "${workspaceFolder}/../../libDaisy/"
       },
       "problemMatcher": [
         "$gcc"
@@ -92,9 +96,10 @@
     },
     {
       "command": "make",
+      "group": "build",
       "label": "build_daisysp",
       "options": {
-        "cwd": "${workspaceFolder}/../../DaisySP"
+        "cwd": "${workspaceFolder}/../../DaisySP/"
       },
       "problemMatcher": [
         "$gcc"
